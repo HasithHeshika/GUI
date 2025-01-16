@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="healthcare-styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="about-us.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="signup.html" class="btn-primary">Sign Up</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="auth-container">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <button type="submit" class="btn-primary">Login</button>
+      </form>
+      <p id="errorMessage" class="error-message"></p>
+      <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+    </section>
+
+    <footer>
+      <p>&copy; 2024 Healthcare System. All Rights Reserved.</p>
+    </footer>
+    <script src="healthcare-scripts.js"></script>
+  </body>
+</html>

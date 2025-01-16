@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Appointment</title>
+    <link rel="stylesheet" href="healthcare-styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="about-us.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="login.html" class="btn-primary">Login</a></li>
+          <li>
+            <a href="book-appointment.html" class="btn-primary"
+              >Book Appointment</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="appointment">
+      <h2>Book Your Appointment</h2>
+      <form>
+        <div>
+          <label for="patientName">Patient Name:</label>
+          <input type="text" id="patientName" name="patientName" required />
+        </div>
+        <div>
+          <label for="contactNumber">Contact Number:</label>
+          <input type="text" id="contactNumber" name="contactNumber" required />
+        </div>
+        <div>
+          <label for="appointmentDate">Appointment Date:</label>
+          <input
+            type="date"
+            id="appointmentDate"
+            name="appointmentDate"
+            required
+          />
+        </div>
+        <div>
+          <label for="doctor">Doctor:</label>
+          <select id="doctor" name="doctor" required>
+            <option value="">-- Select a Doctor --</option>
+            <option value="Dr. Egodawatta">Dr. Egodawatta</option>
+            <option value="Dr. Charindu Hansaka">Dr. Charindu Hansaka</option>
+            <option value="Dr. Darshana Senevirathna">
+              Dr. Darshana Senevirathna
+            </option>
+            <option value="Dr. Tharindu Lakmal">Dr. Tharindu Lakmal</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary">Book Appointment</button>
+      </form>
+    </section>
+
+    <footer>
+      <p>&copy; 2024 Healthcare System. All Rights Reserved.</p>
+    </footer>
+  </body>
+</html>

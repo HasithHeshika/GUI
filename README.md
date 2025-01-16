@@ -1,2 +1,0 @@
-# GUI
-GUI project

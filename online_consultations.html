@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Consultations</title>
+    <link rel="stylesheet" href="healthcare-styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Online Consultations</h1>
+    </header>
+    <main>
+      <section class="form-section">
+        <h2>Book an Appointment</h2>
+        <form
+          id="appointmentForm"
+          action="submit_appointment.php"
+          method="post"
+        >
+          <!-- Patient Name -->
+          <div>
+            <label for="patientName">Your Name:</label>
+            <input
+              type="text"
+              id="patientName"
+              name="patientName"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+
+          <!-- Choose Doctor -->
+          <div>
+            <label for="doctorName">Choose a Doctor:</label>
+            <select id="doctorName" name="doctorName" required>
+              <option value="">-- Select Your Doctor --</option>
+              <option value="dr-darshana-senevirathna">
+                Dr. Darshana Senevirathna
+              </option>
+              <option value="dr-egodawatta">Dr. Egodawatta</option>
+              <option value="dr-tharindu-lakmal">Dr. Tharindu Lakmal</option>
+              <option value="dr-charindu-hansaka">Dr. Charindu Hansaka</option>
+            </select>
+          </div>
+
+          <!-- Appointment Date -->
+          <div>
+            <label for="appointmentDate">Appointment Date:</label>
+            <input
+              type="date"
+              id="appointmentDate"
+              name="appointmentDate"
+              required
+            />
+          </div>
+
+          <!-- Additional Notes -->
+          <div>
+            <label for="notes">Additional Notes (Optional):</label>
+            <textarea
+              id="notes"
+              name="notes"
+              placeholder="Enter any additional information for the doctor..."
+            ></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-primary">Book Appointment</button>
+        </form>
+      </section>
+      <section class="appointments">
+        <h2>Your Appointments</h2>
+        <div id="appointmentsList"></div>
+      </section>
+    </main>
+    <script src="online_consultations.js"></script>
+  </body>
+</html>

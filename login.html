@@ -40,5 +40,47 @@
       <p>&copy; 2024 Healthcare System. All Rights Reserved.</p>
     </footer>
     <script src="healthcare-scripts.js"></script>
+    <!-- Add before closing body tag -->
+    <script src="api.js"></script>
+    <!-- Add to the head section of protected pages -->
+    <script src="auth.js"></script>
+    <script>
+      // Check authentication when page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        checkAuth();
+        updateNavigation();
+      });
+    </script>
+
+    <script>
+      // Replace the existing login form submit handler
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const credentials = {
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+          };
+
+          try {
+            const response = await api.loginUser(credentials);
+            if (response.id) {
+              // Store user info in localStorage
+              localStorage.setItem("user", JSON.stringify(response));
+              // Redirect to home page
+              window.location.href = "home.html";
+            } else {
+              document.getElementById("errorMessage").textContent =
+                "Invalid credentials";
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            document.getElementById("errorMessage").textContent =
+              "Login failed. Please try again.";
+          }
+        });
+    </script>
   </body>
 </html>

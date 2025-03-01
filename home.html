@@ -43,5 +43,34 @@
       <p>&copy; 2024 Healthcare System. All Rights Reserved.</p>
     </footer>
     <script src="healthcare-scripts.js"></script>
+
+    <script>
+      // Add this script after your existing scripts
+      document.addEventListener("DOMContentLoaded", () => {
+        const userInfo = document.getElementById("userInfo");
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+          userInfo.textContent = `Welcome, ${user.name}!`;
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "block";
+        } else {
+          userInfo.textContent = "No account logged in";
+          loginBtn.style.display = "block";
+          logoutBtn.style.display = "none";
+        }
+
+        // Handle logout
+        document
+          .getElementById("logoutButton")
+          .addEventListener("click", () => {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+          });
+      });
+    </script>
   </body>
 </html>

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About Us</title>
     <link rel="stylesheet" href="healthcare-styles.css" />
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
   </head>
   <body>
     <header>
@@ -14,8 +16,14 @@
           <li><a href="about-us.html">About Us</a></li>
           <li><a href="services.html">Services</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li><a href="login.html" class="btn-primary">Login</a></li>
+          <li id="loginBtn">
+            <a href="login.html" class="btn-primary">Login</a>
+          </li>
+          <li id="logoutBtn" style="display: none">
+            <button class="btn-primary" id="logoutButton">Log Out</button>
+          </li>
         </ul>
+        <div id="userInfo" class="user-info">No account logged in</div>
       </nav>
     </header>
 
@@ -34,5 +42,32 @@
     <footer>
       <p>&copy; 2024 Healthcare System. All Rights Reserved.</p>
     </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const userInfo = document.getElementById("userInfo");
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+          userInfo.textContent = `Welcome, ${user.name}!`;
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "block";
+        } else {
+          userInfo.textContent = "No account logged in";
+          loginBtn.style.display = "block";
+          logoutBtn.style.display = "none";
+        }
+
+        // Handle logout
+        document
+          .getElementById("logoutButton")
+          .addEventListener("click", () => {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+          });
+      });
+    </script>
   </body>
 </html>

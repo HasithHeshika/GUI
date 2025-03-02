@@ -36,6 +36,8 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         
+        console.log('Login attempt for:', email); // Debug log
+        
         const [users] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
         
         if (users.length === 0) {
@@ -49,13 +51,19 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
         
-        res.status(200).json({
-            id: user.id,
-            name: user.full_name,
-            email: user.email
-        });
+        const userResponse = {
+            user: {
+                id: user.id,
+                name: user.full_name,
+                email: user.email
+            }
+        };
+        
+        console.log('Login successful:', userResponse); // Debug log
+        res.status(200).json(userResponse);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'Server error during login' });
     }
 };
 

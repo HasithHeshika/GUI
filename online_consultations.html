@@ -3,61 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Online Consultations</title>
+    <title>Book Appointment</title>
     <link rel="stylesheet" href="healthcare-styles.css" />
   </head>
   <body>
     <header>
-      <h1>Online Consultations</h1>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li id="loginBtn"><a href="login.html">Login</a></li>
+          <li id="logoutBtn" style="display: none">
+            <a href="#" onclick="logout()">Logout</a>
+          </li>
+        </ul>
+        <div id="userInfo" class="user-info">No account logged in</div>
+      </nav>
     </header>
+
     <main>
-      <section class="form-section">
-        <h2>Book an Appointment</h2>
-        <form
-          id="appointmentForm"
-          action="submit_appointment.php"
-          method="post"
-        >
-          <!-- Patient Name -->
+      <section class="appointment">
+        <h2>Book Your Appointment</h2>
+        <form id="appointmentForm">
           <div>
-            <label for="patientName">Your Name:</label>
+            <label for="patientName">Patient Name</label>
+            <input type="text" id="patientName" name="patientName" required />
+          </div>
+
+          <div>
+            <label for="contactNumber">Contact Number</label>
             <input
-              type="text"
-              id="patientName"
-              name="patientName"
-              placeholder="Enter your full name"
+              type="tel"
+              id="contactNumber"
+              name="contactNumber"
               required
             />
           </div>
 
-          <!-- Choose Doctor -->
           <div>
-            <label for="doctorName">Choose a Doctor:</label>
-            <select id="doctorName" name="doctorName" required>
-              <option value="">-- Select Your Doctor --</option>
-              <option value="dr-darshana-senevirathna">
-                Dr. Darshana Senevirathna
-              </option>
-              <option value="dr-egodawatta">Dr. Egodawatta</option>
-              <option value="dr-tharindu-lakmal">Dr. Tharindu Lakmal</option>
-              <option value="dr-charindu-hansaka">Dr. Charindu Hansaka</option>
-            </select>
-          </div>
-
-          <!-- Appointment Date -->
-          <div>
-            <label for="appointmentDate">Appointment Date:</label>
+            <label for="appointmentDate">Appointment Date</label>
             <input
               type="date"
               id="appointmentDate"
               name="appointmentDate"
+              min="<?php echo date('Y-m-d'); ?>"
               required
             />
           </div>
 
-          <!-- Additional Notes -->
           <div>
-            <label for="notes">Additional Notes (Optional):</label>
+            <label for="doctor">Select Doctor</label>
+            <select id="doctor" name="doctor" required>
+              <option value="">-- Select a Doctor --</option>
+              <option value="Dr. Egodawatta">Dr. Egodawatta</option>
+              <option value="Dr. Charindu Hansaka">Dr. Charindu Hansaka</option>
+              <option value="Dr. Darshana Senevirathna">
+                Dr. Darshana Senevirathna
+              </option>
+              <option value="Dr. Tharindu Lakmal">Dr. Tharindu Lakmal</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="notes">Additional Notes (Optional)</label>
             <textarea
               id="notes"
               name="notes"
@@ -65,15 +75,222 @@
             ></textarea>
           </div>
 
-          <!-- Submit Button -->
           <button type="submit" class="btn-primary">Book Appointment</button>
         </form>
       </section>
-      <section class="appointments">
+
+      <section class="appointments-list">
         <h2>Your Appointments</h2>
         <div id="appointmentsList"></div>
       </section>
     </main>
-    <script src="online_consultations.js"></script>
+
+    <footer>
+      <p>&copy; 2024 Healthcare System. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script>
+      // Initialize when page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        checkAuth();
+        updateNavigation();
+        loadAppointments();
+      });
+      document
+        .getElementById("appointmentForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          try {
+            const appointmentData = {
+              patient_name: document.getElementById("patientName").value,
+              contact_number: document.getElementById("contactNumber").value,
+              appointment_date:
+                document.getElementById("appointmentDate").value,
+              doctor: document.getElementById("doctor").value,
+              notes: document.getElementById("notes").value,
+            };
+
+            console.log("Submitting appointment:", appointmentData);
+
+            await api.addAppointment(appointmentData);
+            alert("Appointment booked successfully!");
+
+            // Clear form
+            event.target.reset();
+
+            // Reload appointments list
+            loadAppointments();
+          } catch (error) {
+            console.error("Error booking appointment:", error);
+            alert("Failed to book appointment: " + error.message);
+          }
+        });
+      // Load and display appointments
+      async function loadAppointments() {
+        try {
+          const user = JSON.parse(localStorage.getItem("user"));
+          if (!user) {
+            document.getElementById("appointmentsList").innerHTML =
+              "<p>Please login to view appointments</p>";
+            return;
+          }
+
+          const appointments = await api.getAppointments(user.id);
+          const appointmentsList = document.getElementById("appointmentsList");
+
+          if (!appointments || appointments.length === 0) {
+            appointmentsList.innerHTML = "<p>No appointments found</p>";
+            return;
+          }
+
+          appointmentsList.innerHTML = appointments
+            .map(
+              (appointment) => `
+                        <div class="appointment-card">
+                            <h3>Appointment with ${appointment.doctor}</h3>
+                            <p>Date: ${new Date(
+                              appointment.appointment_date
+                            ).toLocaleDateString()}</p>
+                            <p>Patient: ${appointment.patient_name}</p>
+                            <p>Contact: ${appointment.contact_number}</p>
+                            <p>Notes: ${
+                              appointment.notes || "No additional notes"
+                            }</p>
+                            <div class="appointment-actions">
+                                <button onclick="showUpdateForm(${
+                                  appointment.id
+                                })" class="btn-update">Update</button>
+                                <button onclick="deleteAppointment(${
+                                  appointment.id
+                                })" class="btn-delete">Delete</button>
+                            </div>
+                           <!-- Replace the existing update form div in the appointments map function -->
+<div id="updateForm-${
+                appointment.id
+              }" class="update-form" style="display:none;">
+    <form onsubmit="updateAppointment(event, ${appointment.id})">
+        <div>
+            <label for="update-patient-${appointment.id}">Patient Name:</label>
+            <input type="text" id="update-patient-${appointment.id}" 
+                value="${appointment.patient_name}" required>
+        </div>
+        <div>
+            <label for="update-contact-${
+              appointment.id
+            }">Contact Number:</label>
+            <input type="tel" id="update-contact-${appointment.id}" 
+                value="${appointment.contact_number}" required>
+        </div>
+        <div>
+            <label for="update-date-${appointment.id}">Appointment Date:</label>
+            <input type="date" id="update-date-${appointment.id}" 
+                value="${appointment.appointment_date.split("T")[0]}" required>
+        </div>
+        <div>
+            <label for="update-doctor-${appointment.id}">Doctor:</label>
+            <select id="update-doctor-${appointment.id}" required>
+                <option value="Dr. Egodawatta" ${
+                  appointment.doctor === "Dr. Egodawatta" ? "selected" : ""
+                }>Dr. Egodawatta</option>
+                <option value="Dr. Charindu Hansaka" ${
+                  appointment.doctor === "Dr. Charindu Hansaka"
+                    ? "selected"
+                    : ""
+                }>Dr. Charindu Hansaka</option>
+                <option value="Dr. Darshana Senevirathna" ${
+                  appointment.doctor === "Dr. Darshana Senevirathna"
+                    ? "selected"
+                    : ""
+                }>Dr. Darshana Senevirathna</option>
+                <option value="Dr. Tharindu Lakmal" ${
+                  appointment.doctor === "Dr. Tharindu Lakmal" ? "selected" : ""
+                }>Dr. Tharindu Lakmal</option>
+            </select>
+        </div>
+        <div>
+            <label for="update-notes-${appointment.id}">Notes:</label>
+            <textarea id="update-notes-${appointment.id}">${
+                appointment.notes || ""
+              }</textarea>
+        </div>
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </form>
+</div>
+                        </div>
+                    `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error loading appointments:", error);
+          document.getElementById("appointmentsList").innerHTML =
+            "<p>Failed to load appointments</p>";
+        }
+      }
+
+      // Show/hide update form
+      function showUpdateForm(id) {
+        const form = document.getElementById(`updateForm-${id}`);
+        form.style.display = form.style.display === "none" ? "block" : "none";
+      }
+
+      // Update appointment
+      // In the script section of online_consultations.html
+      async function updateAppointment(event, id) {
+        event.preventDefault();
+
+        try {
+          const updatedData = {
+            patient_name: document
+              .getElementById(`update-patient-${id}`)
+              .value.trim(),
+            contact_number: document
+              .getElementById(`update-contact-${id}`)
+              .value.trim(),
+            appointment_date: document.getElementById(`update-date-${id}`)
+              .value,
+            doctor: document.getElementById(`update-doctor-${id}`).value,
+            notes:
+              document.getElementById(`update-notes-${id}`).value.trim() ||
+              null,
+          };
+
+          // Validate required fields
+          if (
+            !updatedData.patient_name ||
+            !updatedData.contact_number ||
+            !updatedData.appointment_date ||
+            !updatedData.doctor
+          ) {
+            throw new Error("Please fill in all required fields");
+          }
+
+          console.log("Updating with data:", updatedData);
+
+          await api.updateAppointment(id, updatedData);
+          alert("Appointment updated successfully");
+          loadAppointments();
+        } catch (error) {
+          console.error("Error updating appointment:", error);
+          alert("Failed to update appointment: " + error.message);
+        }
+      }
+
+      // Delete appointment
+      async function deleteAppointment(id) {
+        if (confirm("Are you sure you want to delete this appointment?")) {
+          try {
+            await api.deleteAppointment(id);
+            loadAppointments();
+          } catch (error) {
+            console.error("Error deleting appointment:", error);
+            alert("Failed to delete appointment");
+          }
+        }
+      }
+    </script>
   </body>
 </html>

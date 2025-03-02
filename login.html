@@ -39,48 +39,58 @@
     <footer>
       <p>&copy; 2024 Healthcare System. All Rights Reserved.</p>
     </footer>
-    <script src="healthcare-scripts.js"></script>
+
     <!-- Add before closing body tag -->
     <script src="api.js"></script>
     <!-- Add to the head section of protected pages -->
     <script src="auth.js"></script>
     <script>
-      // Check authentication when page loads
-      document.addEventListener("DOMContentLoaded", () => {
-        checkAuth();
+      // Wait for DOM to be fully loaded
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initializePage);
+      } else {
+        initializePage();
+      }
+
+      function initializePage() {
+        // Only update navigation on login page
         updateNavigation();
-      });
-    </script>
 
-    <script>
-      // Replace the existing login form submit handler
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
+        // Handle login form submission
+        const loginForm = document.getElementById("loginForm");
+        if (loginForm) {
+          loginForm.addEventListener("submit", handleLogin);
+        }
+      }
 
-          const credentials = {
-            email: document.getElementById("email").value,
-            password: document.getElementById("password").value,
-          };
+      async function handleLogin(event) {
+        event.preventDefault();
 
-          try {
-            const response = await api.loginUser(credentials);
-            if (response.id) {
-              // Store user info in localStorage
-              localStorage.setItem("user", JSON.stringify(response));
-              // Redirect to home page
-              window.location.href = "home.html";
-            } else {
-              document.getElementById("errorMessage").textContent =
-                "Invalid credentials";
-            }
-          } catch (error) {
-            console.error("Error:", error);
-            document.getElementById("errorMessage").textContent =
-              "Login failed. Please try again.";
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const errorMessage = document.getElementById("errorMessage");
+
+        try {
+          errorMessage.textContent = ""; // Clear previous errors
+          console.log("Attempting login..."); // Debug log
+
+          const response = await api.loginUser({ email, password });
+          console.log("Login response:", response); // Debug log
+
+          if (response && response.user) {
+            // Store user data in localStorage
+            localStorage.setItem("user", JSON.stringify(response.user));
+            // Redirect to home page
+            window.location.href = "home.html";
+          } else {
+            errorMessage.textContent = "Invalid login response";
           }
-        });
+        } catch (error) {
+          console.error("Login error:", error);
+          errorMessage.textContent =
+            error.message || "Login failed. Please try again.";
+        }
+      }
     </script>
   </body>
 </html>
